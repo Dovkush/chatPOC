@@ -1,12 +1,25 @@
 import { Button, Input, Box } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useState ,useContext} from 'react';
+import { RequestContext } from '../context/RequestProvider';
 
 const Login = (props) => {
-  const { setPageNo } = props;
-  const [email, setEmail] = useState('');
-
+  const {userId,setUserId,socket,setSocket}=useContext(RequestContext);
+  // console.log(userId,setUserId);
+  // console.log(userId);
+  const [userEmail, setUserEmail] = useState("");
   const onSubmit = () => {
-    setPageNo(2);
+    axios.post("/user/create", {
+      email: userEmail
+    }).then(({data})=>{
+      console.log(data._id)
+        setUserId(data._id);
+        socket.emit("join", data._id);
+
+    })
+ 
+    .catch(console.error);
+    props.history.push("/rooms");
   };
   return (
     <div
@@ -27,7 +40,7 @@ const Login = (props) => {
           mb="2rem"
 
           onChange={(e) => {
-            setEmail(e.target.value);
+            setUserEmail(e.target.value);
           }}
         />
         <Button colorScheme="blue" onClick={onSubmit}>
