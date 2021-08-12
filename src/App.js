@@ -1,25 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
 
-function App() {
+import { ChakraProvider } from '@chakra-ui/react';
+import Login from './components/Login';
+import Chatroom from './components/ChatRoom';
+import Chat from './components/ChatList';
+
+const App = () => {
+  // 1 -> login page
+  // 2 -> chat room
+  // 3 -> chat message
+  const [pageNo, setPageNo] = useState(1);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ChakraProvider>
+        {pageNo == 1 ? (
+          <Login setPageNo={setPageNo} />
+        ) : <Chatroom setPageNo={setPageNo}></Chatroom>
+        }
+      </ChakraProvider>
+    </>
   );
-}
+};
 
 export default App;
