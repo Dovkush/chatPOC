@@ -1,22 +1,32 @@
-import React, { useEffect ,useContext,useState} from 'react';
-import  { useHistory } from "react-router-dom"
+import React, { useEffect, useContext, useState } from 'react';
+import { useHistory } from "react-router-dom"
 import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react';
 import axios from 'axios';
 import { RequestContext } from '../context/RequestProvider';
-import {serverUrl} from "../constants";
+import { serverUrl } from "../constants";
 import { GetPrototypeFromConstructor } from 'es-abstract';
+import moment from 'moment';
 const ChatList = (props) => {
-  const history=useHistory();
- const[userChat,setUserChat]=useState([]);
-  const {userId,socket}= useContext(RequestContext);
- console.log(socket,userId);
+  const history = useHistory();
+  const [userChat, setUserChat] = useState([]);
+  const { userId, socket, username, setUserId, setusername } = useContext(RequestContext);
+  console.log(socket, userId);
+  useEffect(() => {
+    // console.log(window.localStorage.getItem('userdata'),userId,username) 
+    if (!window.localStorage.getItem('userdata')) {
+      logout()
+    }
+  }, [])
   const logout = () => {
-      props.history.push("/");
+    window.localStorage.removeItem("userdata")
+    setUserId(null)
+    setusername(null)
+    props.history.push("/");
   };
   const [users, setUsers] = useState([]);
   useEffect(() => {
     (async () => {
-      if(!userId){
+      if (!userId) {
         return;
       }
       const response = await axios.get(`/users/${userId}`);
@@ -31,75 +41,74 @@ const ChatList = (props) => {
         })
       );
     })();
-  }, [userId, socket]);
-  useEffect(() => {
-    socket.on("get-message", (data) => {
-      const { from, to, msg, roomID } = data;
-      setUsers((prev) => {
-        return prev.map((user) => {
-          if (user._id === from) {
-            return {
-              ...user,
-              hasNewMessage: true,
-            };
-          }
-          return user;
+    if (socket) {
+      socket.on("get-message", (data) => {
+        const { from, to, msg, roomID } = data;
+        setUsers((prev) => {
+          return prev.map((user) => {
+            if (user._id === from) {
+              return {
+                ...user,
+                hasNewMessage: true,
+              };
+            }
+            return user;
+          });
         });
       });
-    });
-  }, []);
+    }
+  }, [userId, socket]);
+
   console.log(users);
-  
-  const goToRoom=(email,roomId)=>{
+
+  const goToRoom = (email, roomId) => {
     history.push({
       pathname: '/chat',
       state: { roomId, email }
     });
   }
-return (
+  return (
     <>
-      <Box maxWidth="50vw" h="100vh" m="auto" border={'1px solid lightgrey'}>
-        <Box backgroundColor="#4299E1" height="5rem" borderShadow="gray">
-        <Flex h="8vh"  display="flex" justifyContent="center">
-        <Box fontWeight="bold" fontSize="45px" >ROOMS</Box>
-          <Button colorScheme="red" m="1rem 0  2rem 2rem" onClick={logout}>
+      <Box maxWidth={["100%", "50%"]} h="100vh" m="auto" border={'1px solid lightgrey'}>
+        <Flex p="0.5rem" display="flex" justifyContent="space-between" alignItems="center" bgColor="blue.800">
+          <Text color="white" fontWeight="semibold" fontSize="xl" >{username}</Text>
+          <Button colorScheme="red" onClick={logout}>
             Logout
           </Button>
-         
         </Flex>
-        </Box>
 
         <Flex
           direction="column"
           alignItems="center"
           h="92vh"
           overflow='auto'
-         backgroundColor="lightgray"
+          backgroundColor="lightgray"
           backgroundPosition="center"
         >
           {users.map((chatData) => {
+            console.log(chatData);
             return (
               <Flex
                 justifyContent="space-between"
                 alignItems="center"
                 bg="white"
                 h="90px"
-                w="90%"
-                 style={{ textDecoration: 'none' }} 
-                mt="0.5rem"
-                borderRadius="xl"
+                w="100%"
+                style={{ textDecoration: 'none' }}
+                bgColor={!chatData.read ? "white" : "gray.100"}
                 border="1px solid lightgray"
-                mb="0.5rem"
                 cursor="pointer"
-                onClick={() => goToRoom(chatData.email,chatData.roomID)}
+                onClick={() => goToRoom(chatData.email, chatData.roomID)}
               >
-                <Box ml="1rem">
-                  <Heading as="h3" size="lg" m=".5rem">
+                <Box ml="1rem" p="0.5rem">
+                  <Text size="lg" fontWeight="semibold">
                     {chatData.email}
-                  </Heading>
-                  <Text m="0.5rem">{chatData.timestamp}</Text>
+                  </Text>
                 </Box>
-                {chatData.read ? (
+                <Flex alignItems="flex-end" h="100%">
+                  <Text fontSize="xs" >{moment(chatData.updatedAt).format("LT")}</Text>
+                </Flex>
+                {/* {!chatData.read ? (
                   <Box
                     w="1rem"
                     h="1rem"
@@ -109,7 +118,7 @@ return (
                   ></Box>
                 ) : (
                   <></>
-                )}
+                )} */}
               </Flex>
             );
           })}

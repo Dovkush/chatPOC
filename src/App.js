@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import {serverUrl} from "./constants";
+import { serverUrl } from "./constants";
 import { ChakraProvider } from '@chakra-ui/react';
 import Login from './components/Login';
 
@@ -17,8 +17,8 @@ const App = () => {
   // 2 -> chat room
   // 3 -> chat message
   const [pageNo, setPageNo] = useState(1);
-  const {socket,setSocket}=useContext(RequestContext);
-  useEffect(()=>{
+  const { socket, setSocket } = useContext(RequestContext);
+  useEffect(() => {
     const socket = io(serverUrl);
     socket.on("connect", () => {
       console.log("you connected with id : " + socket.id);
@@ -28,19 +28,16 @@ const App = () => {
       console.log(data);
     });
     setSocket(socket);
-  },[])
+  }, [])
   return (
-   
-    <ChakraProvider>
 
-     <Switch>
-       <Route path="/rooms" exact component={ChatList}></Route>
-       <Route path="/chat" exact component={Room}></Route>
-       <Route path="/"  exact component={Login}></Route>
-     </Switch>
-      </ChakraProvider>
-    
-     
+    <Switch>
+      <Route path="/rooms" exact component={ChatList}></Route>
+      <Route path="/chat" exact component={Room}></Route>
+      <Route path="/" exact component={Login}></Route>
+    </Switch>
+
+
   );
 };
 

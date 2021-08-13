@@ -1,53 +1,59 @@
-import { Button, Input, Box } from '@chakra-ui/react';
+import { Button, Input, Box, Flex, Heading } from '@chakra-ui/react';
+
 import axios from 'axios';
-import React, { useState ,useContext} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { RequestContext } from '../context/RequestProvider';
 
 const Login = (props) => {
-  const {userId,setUserId,socket,setSocket}=useContext(RequestContext);
+  const { userId, setUserId, socket, setSocket, setusername, username } = useContext(RequestContext);
   // console.log(userId,setUserId);
   // console.log(userId);
   const [userEmail, setUserEmail] = useState("");
+
   const onSubmit = () => {
+    if (userEmail == "") {
+      alert("please enter valid email Id");
+      return;
+    }
     axios.post("/user/create", {
       email: userEmail
-    }).then(({data})=>{
+    }).then(({ data }) => {
       console.log(data._id)
-        setUserId(data._id);
-        socket.emit("join", data._id);
+      setUserId(data._id);
+      setusername(userEmail)
+      socket.emit("join", data._id);
 
     })
- 
-    .catch(console.error);
+
+      .catch(console.error);
     props.history.push("/rooms");
   };
   return (
-    <div
+    <Flex
       className="login_container"
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        width: '100vw',
-
-      }}
+      justifyContent="center"
+      alignItems="center"
+      w="100%"
+      h="100vh"
     >
-      <Box w="50%" p={4} border={"1px solid lightgrey"}>
+      <Flex m="4" w={["100%", "50%"]} flexDir="column" alignItems="center" p={4} >
+        <Heading
+          mb="1rem"
+        > Login </Heading>
         <Input
           placeholder="Email"
           size="md"
-          mb="2rem"
+          mb="1rem"
 
           onChange={(e) => {
             setUserEmail(e.target.value);
           }}
         />
         <Button colorScheme="blue" onClick={onSubmit}>
-          Login
+          Submit
         </Button>
-      </Box>
-    </div>
+      </Flex>
+    </Flex>
   );
 };
 
