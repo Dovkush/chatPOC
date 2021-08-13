@@ -59,20 +59,22 @@ function Room(props) {
   };
 
   useEffect(() => {
-    socket.on("get-message", (data) => {
-      if (scrollRef.current)
-        scrollRef.current.scrollIntoView()
-      console.log(data);
-      const { from, to, msg, roomID } = data;
-      setMsgData((prev) => [
-        ...prev,
-        {
-          msg: msg,
-          from
-        },
-      ]);
-    });
-  }, []);
+    if (socket) {
+      socket.on("get-message", (data) => {
+        if (scrollRef.current)
+          scrollRef.current.scrollIntoView()
+        console.log(data);
+        const { from, to, msg, roomID } = data;
+        setMsgData((prev) => [
+          ...prev,
+          {
+            msg: msg,
+            from
+          },
+        ]);
+      });
+    }
+  }, [socket]);
 
   return (
     <>
