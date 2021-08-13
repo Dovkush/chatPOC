@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useHistory } from "react-router-dom"
-import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Text, Image } from '@chakra-ui/react';
 import axios from 'axios';
 import { RequestContext } from '../context/RequestProvider';
 import { serverUrl } from "../constants";
@@ -72,6 +72,7 @@ const ChatList = (props) => {
       <Box maxWidth={["100%", "50%"]} h="100vh" m="auto" border={'1px solid lightgrey'}>
         <Flex p="0.5rem" display="flex" justifyContent="space-between" alignItems="center" bgColor="blue.800">
           <Text color="white" fontWeight="semibold" fontSize="xl" >{username}</Text>
+
           <Button colorScheme="red" onClick={logout}>
             Logout
           </Button>
@@ -100,13 +101,16 @@ const ChatList = (props) => {
                 cursor="pointer"
                 onClick={() => goToRoom(chatData.email, chatData.roomID)}
               >
-                <Box ml="1rem" p="0.5rem">
+                <Flex ml="1rem" p="0.5rem">
+                  <Image src={`https://avatars.dicebear.com/api/gridy/${chatData.roomID}.svg`}
+                    h="50%" w="10%" mr="3"
+                  ></Image>
                   <Text size="lg" fontWeight="semibold">
                     {chatData.email}
                   </Text>
-                </Box>
-                <Flex alignItems="flex-end" h="100%">
-                  <Text fontSize="xs" >{moment(chatData.updatedAt).format("LT")}</Text>
+                </Flex>
+                <Flex alignItems="flex-end" h="100%" >
+                  <Text fontSize="0.6rem" fontWeight="400" w="50px">{moment(chatData.updatedAt).format("LT")}</Text>
                 </Flex>
                 {/* {!chatData.read ? (
                   <Box
@@ -116,7 +120,7 @@ const ChatList = (props) => {
                     backgroundColor="blue"
                     mr="2rem"
                   ></Box>
-                ) : (
+                ) : (`
                   <></>
                 )} */}
               </Flex>

@@ -95,7 +95,7 @@ function Room(props) {
             <Flex maxH="80vh" maxW="100vw" flexDir="column" pl="2" pr="2" overflowX="hidden">
               {msgData.map((msgData) => {
                 return (
-                  <Message msgData={msgData}></Message>
+                  <Message key={JSON.stringify(msgData)} msgData={msgData}></Message>
                 )
               })
 
